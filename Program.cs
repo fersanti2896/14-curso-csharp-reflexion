@@ -1,5 +1,6 @@
 ﻿
 using metadatos.Reflexion;
+using System.Collections;
 using System.Reflection;
 
 Console.WriteLine("¡REFLEXIÓN Y METADATOS!");
@@ -40,3 +41,27 @@ Console.WriteLine($"Obteniendo resultado: { resultado }");
 
 tipoUtil.InvokeMember("MetodoEstatico", BindingFlags.InvokeMethod, binder: null, target: null, args: new object[] { });
 tipoUtil.InvokeMember("MetodoPrivado", BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Instance, binder: null, target: utilidades, args: new object[] { });
+
+/* Obteniendo tipo base e interfaz */
+var baseString = typeof(string).BaseType;
+var baseCarro = typeof(Carro).BaseType;
+
+Console.WriteLine($"\nLa clase base de string es: { baseString }");
+Console.WriteLine($"La clase base de carro es: { baseCarro }");
+Console.WriteLine($"Las interfaces de string son: ");
+
+foreach (var interfaz in typeof(string).GetInterfaces()) {
+    Console.WriteLine($"- { interfaz }");
+}
+
+// Viendo si un tipo hereda de una interfaz o clase
+var tipoString = typeof(string);
+var tipoEnumerable = typeof(IEnumerable);
+var tipoCarro = typeof(Carro);
+var tipoVeh = typeof(Vehiculo);
+
+Console.WriteLine($"\n¿String hereda de IEnumerable? { tipoString.IsAssignableTo(tipoEnumerable) }");
+Console.WriteLine($"¿IEnumerable es implementada por String? { tipoEnumerable.IsAssignableFrom(tipoString) }");
+Console.WriteLine($"¿Carro hereda de vehiculo? { tipoCarro.IsAssignableTo(tipoVeh) }");
+Console.WriteLine($"¿Carro hereda de IEnumerable? { tipoCarro.IsAssignableTo(tipoEnumerable) }");
+
