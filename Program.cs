@@ -67,7 +67,7 @@ Console.WriteLine($"¿Carro hereda de vehiculo? { tipoCarro.IsAssignableTo(tipoV
 Console.WriteLine($"¿Carro hereda de IEnumerable? { tipoCarro.IsAssignableTo(tipoEnumerable) }\n");
 
 /* Atributos personalizados */
-var per = new Persona();
+/*var per = new Persona();
 per.Edad = 17;
 
 var errores = validarObjeto(persona);
@@ -120,4 +120,22 @@ IEnumerable<ErrorValidacion> validarObjeto(object obj) {
     }
 
     return resultado;
+}*/
+
+/* Atributos personalizados */
+Console.WriteLine("-- Puedes realizar las siguientes acciones --");
+
+foreach (var accion in Enum.GetValues<Acciones>()) {
+    var campo = typeof(Acciones).GetField(accion.ToString())!;
+    var esconderAtributo = campo.GetCustomAttribute(typeof(EsconderAttribute));
+
+    if (esconderAtributo is not null) {
+        var esconder = ((EsconderAttribute)esconderAtributo).Ocultar();
+
+        if (esconder) {
+            continue;
+        }
+    }
+
+    Console.WriteLine(accion);
 }
