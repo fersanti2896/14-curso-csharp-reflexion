@@ -1,6 +1,7 @@
 ﻿
 using metadatos.Reflexion;
 using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 Console.WriteLine("¡REFLEXIÓN Y METADATOS!");
@@ -63,5 +64,60 @@ var tipoVeh = typeof(Vehiculo);
 Console.WriteLine($"\n¿String hereda de IEnumerable? { tipoString.IsAssignableTo(tipoEnumerable) }");
 Console.WriteLine($"¿IEnumerable es implementada por String? { tipoEnumerable.IsAssignableFrom(tipoString) }");
 Console.WriteLine($"¿Carro hereda de vehiculo? { tipoCarro.IsAssignableTo(tipoVeh) }");
-Console.WriteLine($"¿Carro hereda de IEnumerable? { tipoCarro.IsAssignableTo(tipoEnumerable) }");
+Console.WriteLine($"¿Carro hereda de IEnumerable? { tipoCarro.IsAssignableTo(tipoEnumerable) }\n");
 
+/* Atributos personalizados */
+var per = new Persona();
+per.Edad = 17;
+
+var errores = validarObjeto(persona);
+
+if (errores.Any()) {
+    Console.WriteLine("La persona no tiene los datos correctos.");
+
+    foreach (var error in errores) {
+        Console.WriteLine($"- Propiedad: { error.Propiedad }; Mensaje: { error.MensajeDeError }");
+    }
+
+    return;
+}
+
+Console.WriteLine($"La edad la de persona es: { per.Edad }");
+
+bool validarPersona(Persona p) {
+    var tipo = p.GetType();
+    var propiedadEdad = tipo.GetProperty("Edad")!;
+
+    if (propiedadEdad.IsDefined(typeof(RangeAttribute))) {
+        var atrRange = (RangeAttribute)Attribute.GetCustomAttribute(propiedadEdad, typeof(RangeAttribute))!;
+
+        return p.Edad >= (int)atrRange.Minimum && p.Edad <= (int)atrRange.Maximum;
+    }
+
+    return true;
+}
+
+IEnumerable<ErrorValidacion> validarObjeto(object obj) {
+    var t = obj.GetType();
+    var propiedades = t.GetProperties();
+    var resultado = new List<ErrorValidacion>();
+
+    foreach (var propiedad in propiedades) {
+        if (propiedad.IsDefined(typeof(RangeAttribute))) {
+            var atributoRange = (RangeAttribute)Attribute.GetCustomAttribute(propiedad, typeof(RangeAttribute))!;
+            var valor = (int)propiedad.GetValue(obj)!;
+            var minimo = (int)atributoRange.Minimum;
+            var maximo = (int)atributoRange.Maximum;
+            var esValido = valor >= minimo && valor <= maximo;
+            
+            if (!esValido) {
+                resultado.Add(new ErrorValidacion {
+                    Propiedad = propiedad.Name,
+                    MensajeDeError = $"El valor debe de estar entre { minimo } y { maximo }"
+                });
+            }
+        }
+    }
+
+    return resultado;
+}
