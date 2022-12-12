@@ -1,7 +1,9 @@
 ﻿
 using metadatos.Reflexion;
+using Newtonsoft.Json;
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
+using System.Dynamic;
 using System.Reflection;
 
 Console.WriteLine("¡REFLEXIÓN Y METADATOS!");
@@ -139,3 +141,17 @@ foreach (var accion in Enum.GetValues<Acciones>()) {
 
     Console.WriteLine(accion);
 }
+
+/* Dynamic */
+var contenidoJSON = File.ReadAllText(@"C:\Users\josantiago\Documents\Cursos Udemy\Programando en C# de Principiante a Profesional\S14 - Reflexion y Metadatos\persona.json");
+dynamic obj = JsonConvert.DeserializeObject<dynamic>(contenidoJSON)!;
+
+Console.WriteLine($"\nNombre: { obj.Nombre }");
+Console.WriteLine($"Edad: { obj.Edad }");
+
+/* Utilizando ExpandoObject */
+dynamic objExpand = new ExpandoObject();
+objExpand.Nombre = "Marisol Contreras";
+objExpand.Edad = 25;
+
+Console.WriteLine($"\nNombre: { objExpand.Nombre } Edad: { objExpand.Edad } años.");
